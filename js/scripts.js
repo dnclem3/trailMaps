@@ -11,119 +11,92 @@ var config = {
 };
 firebase.initializeApp(config);
 
-//Unique IDs
-var uniqueId = [];
-var uniqueObId = [];
-var trails = [];
-
-
+var firebaseRefData = firebase.database().ref();
 
 //Constructor for new bike trail
 function Trail(trailName, distance, lat, long) {
-  this.obId = uniqueObId.length + 1
   this.trailName = trailName;
   this.distance = distance;
   this.lat = lat;
   this.long = long;
-  this.review = [];
-  this.pushUniqueId(this.obId);
-  this.addtoTrails();
 }
 //Method for adding trail to the form
-function updateTrails(){
-  $("#trail").text();
-  trails.forEach(function(trail){
-    $("#trail").append("<option>" + trail.trailName + "</option>");
-  });
+var firebaseRefData = firebase.database().ref();
+
+//Fetches files from firebase and populates trail selector
+firebaseRefData.on('child_added', snap => {
+  var trails = snap.child("trailName").val();
+  $("#trail").append("<option>" + trails + "</option>");
+});
+
+//Generates reviews list page
+firebaseRefData.on('child_added', snap => {
+  var rating = snap.child('review').child('0').child("rating").val();
+  var traffic = snap.child("traffic").val();
+  var friendly = snap.child("friendly").val();
+  var comments = snap.child("comments").val();
+
+  $("#list").append(`<div class="demo-card-wide mdl-card mdl-shadow--2dp"><div class="mdl-card__title"><h2 class="mdl-card__title-text">Rating ` +
+  rating + `</h2></div><div class="mdl-card__supporting-text">` + comments);
+});
+
+//Pushes files to Firebase database
+var pushToDatabase = function() {
+  var trailName = $("#trailName").val();
+  var distance = $("#distance").val();
+  var long = $("#long").val();
+  var lat = $("#lat").val();
+  alert(trailName);
+
+  var newTrail = new Trail(trailName, distance, lat, long);
+  alert(newTrail.trailName);
+  return newTrail;
 }
 
-Trail.prototype.addtoTrails = function() {
-  trails.push(this);
-}
-
-function returnTrails() {
-  var select = $("#trail").val();
-  var object = "";
-    trails.forEach(function(trail) {
-    if (select === trail.trailName) {
-      object = trail;
-    }
-  });
-  return object;
-}
-
-//Method for adding map coordinates to js Leaflet
-Trail.prototype.mapCoordinates = function() {
-  var mymap = L.map('mapid').setView([this.lat, this.long], 15);
-  return mymap;
-}
-
-Trail.prototype.pushUniqueId = function(id) {
-  uniqueObId.push(id);
-}
-
-Trail.prototype.writeUserData = function() {
+//Pushes reviews to firebase
+var writeUserData = function(review) {
   var firebaseRef = firebase.database().ref();
-  firebaseRef.child(this.obId).set(this);
+  firebaseRefData.push().set(review);
 }
 
 //Constructor with all attributes of trail reviews
-function Review(condition, traffic, friendly, rating, comments) {
-  this.uniqueId = uniqueId.length + 1
+function Review(trailName, condition, traffic, friendly, rating, comments) {
+  this.trailName = trailName;
   this.condition = condition;
   this.traffic = traffic;
   this.friendly = friendly;
   this.rating = rating;
   this.comments = comments;
-  this.pushUniqueId(this.uniqueId);
 }
-
-//Method to push objects into variable
-Review.prototype.pushUniqueId = function(id) {
-  uniqueId.push(id);
-}
-
-//Create new objects
-var burkeGilman = new Trail("Burke Gilman", 35, 47.593968, -122.306171);
-var elliotBay = new Trail("Elliot Bay", 7, 47.785089, -122.325275);
-var arboretuem = new Trail("Arboretuem", 3, 47.785089, -120.325221);
-
-updateTrails();
-//Calling method on objects
-var mymap = elliotBay.mapCoordinates();
 
 //Method to gather inputs from the user
 var getReview = function() {
+  var trailName = $("#trail").val();
   var condition = $("input:radio[name=condition]:checked").val();
   var traffic = $("#traffic").val();
   var friendly = $("input:radio[name=friendly]:checked").val();
   var rating = $("#rating").val();
   var comments =$("#comments").val();
-  var review = new Review(condition, traffic, friendly, rating, comments);
+
+  var review = new Review(trailName, condition, traffic, friendly, rating, comments);
   return review;
 }
 
-
-//Map for biking trails
-var updateMap = function() {     L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZG5jbGVtMyIsImEiOiJjajEyeWxscWIwMGp1MzJwMXByd28waW83In0.PKZV-kndiDaRkLaBz89cvw', {
-      attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-      maxZoom: 18,
-      accessToken: 'pk.eyJ1IjoiZG5jbGVtMyIsImEiOiJjajEyeWxscWIwMGp1MzJwMXByd28waW83In0.PKZV-kndiDaRkLaBz89cvw'
-  }).addTo(mymap);
-}
-updateMap();
 //Interface Logic
 $(document).ready(function() {
-  $("#trail").on(function() {
-    var mymap = elliotBay.mapCoordinates();
-    updateMap();
 
-  })
-  $("form").submit(function(e) {
+  //When submit button on review form is clicked
+  $("form#reviewForm").submit(function(e) {
     e.preventDefault();
     var test = getReview();
-    var objectName = returnTrails();
-    objectName.review.push(test);
-    objectName.writeUserData();
+    writeUserData(test);
+  })
+
+  $("form#trailEntry").submit(function(e) {
+    e.preventDefault();
+    var firebaseRef = firebase.database().ref();
+    var newTrail = pushToDatabase();
+    alert(newTrail.trailName);
+    firebaseRef.push().set(newTrail);
   })
 })

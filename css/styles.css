@@ -1,3 +1,14 @@
 #mapid {
-  height: 600px; 
+  height: 600px;
+}
+.demo-card-wide.mdl-card {
+  width: 512px;
+}
+.demo-card-wide > .mdl-card__title {
+  color: #fff;
+  height: 176px;
+  background: url('http://geology.com/store/wall-maps/blue-ocean-united-states-map-lg.jpg') center / cover;
+}
+.demo-card-wide > .mdl-card__menu {
+  color: #fff;
 }
