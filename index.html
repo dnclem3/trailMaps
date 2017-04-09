@@ -10,57 +10,96 @@
     <title>City Biking Trails</title>
   </head>
   <body>
-    <div class="container">
-      <h1>City Biking Trails</h1>
-      <div id="mapid"></div>
-      <div>
-        <form id="reviewForm">
-          <select class="form-control" id="trail">
-          </select>
-          <div class="radio">
-            <label>
-              <input type="radio" name="condition" value="paved" checked>
-              Paved
-            </label>
+    <div class="container-fluid">
+      <div class="row" id="header">
+        <h1>City Biking Trails</h1>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-sm-push-6">
+          <div id="mapid">
           </div>
-          <div class="radio">
-            <label>
-              <input type="radio" name="condition" value="dirt">
-              Dirt
-            </label>
+        </div>
+        <div class="col-sm-6 col-sm-pull-6">
+          <div class="" id="trailForm">
+            <form id="trailEntry">
+              <h2>Add New Trail</h2>
+              <div class="form-group">
+                <label for="trailName">Trail Name</label>
+                <input class="form-control" type="text" name="trailName" id="trailName" value="">
+              </div>
+              <div class="form-group">
+                <label for="distance">Length</label>
+                <input class="form-control" type="number" name="distance" id="distance" step="any" value="">
+              </div>
+              <div class="form-group">
+                <label for="lat">Lattitude</label>
+                <input class="form-control" type="number" name="lat" step="any" id="lat" value="">
+              </div>
+              <div class="form-group">
+                <label for="long">Longitude</label>
+                <input class="form-control" type="number" name="long" step="any" id="long" value="">
+              </div>
+              <button type="submit" class="btn btn-danger">Add Trail</button>
+            </form>
           </div>
-          <div class="radio">
-            <label>
-              <input type="radio" name="condition" value="gravel">
-              Gravel
-            </label>
-          </div>
-          <select class="form-control" id="traffic">
-            <option value="Crowded">Crowded</option>
-            <option value="Empty">Empty</option>
-          </select>
-          <div class="radio">
-            <label>
-              <input type="radio" name="friendly" value="kid" checked>
-              Kid Friendly!
-            </label>
-          </div>
-          <div class="radio">
-            <label>
-              <input type="radio" name="friendly" value="dog">
-              Dog Friendly!
-            </label>
-          </div>
-          <div class="form-group">
-            <label>Difficulty. Rate 1 through 5</label>
-            <input class="form-control" type="number" max="5" min="1" id="rating">
-          </div>
-          <div class="form-group">
-            <label>Extra Comments</label>
-            <input class="form-control" type="text" id="comments">
-          </div>
-          <button type="submit" class="btn btn-danger">Submit Trail Review</button>
-        </form>
+          <form id="reviewForm">
+            <div class="" id="trailPick">
+              <label>Pick Trail</label>
+              <div class="row">
+                <div class="col-xs-6">
+                  <select class="form-control" id="trail">
+                  </select>
+                </div>
+                <div class="col-xs-6">
+                  <button type="button" id="formShow" class="btn btn-danger" name="button">Add Trail</button>
+                </div>
+              </div>
+            </div>
+            <div class="radio">
+              <label>
+                <input type="radio" name="condition" value="paved" checked>
+                Paved
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input type="radio" name="condition" value="dirt">
+                Dirt
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input type="radio" name="condition" value="gravel">
+                Gravel
+              </label>
+            </div>
+            <select class="form-control" id="traffic">
+              <option value="Crowded">Crowded</option>
+              <option value="Empty">Empty</option>
+            </select>
+            <div class="radio">
+              <label>
+                <input type="radio" name="friendly" value="kid" checked>
+                Kid Friendly!
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input type="radio" name="friendly" value="dog">
+                Dog Friendly!
+              </label>
+            </div>
+            <div class="form-group">
+              <label>Difficulty. Rate 1 through 5</label>
+              <input class="form-control" type="number" max="5" min="1" id="rating">
+            </div>
+            <div class="form-group">
+              <label>Extra Comments</label>
+              <input class="form-control" type="text" id="comments">
+            </div>
+            <button type="submit" class="btn btn-danger">Submit Trail Review</button>
+          </form>
+        </div>
       </div>
     </div>
     <script src="js/scripts.js"></script>
