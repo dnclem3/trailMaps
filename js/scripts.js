@@ -15,11 +15,11 @@ firebase.initializeApp(config);
 //Firebase database variable
 var firebaseRef = firebase.database().ref();
 //Constructor for new bike trail
-function Trail(trailName, distance, lat, long) {
+function Trail(trailName, distance, lat, lng) {
   this.trailName = trailName;
   this.distance = distance;
   this.lat = lat;
-  this.long = long;
+  this.lng = lng;
   this.date = firebase.database.ServerValue.TIMESTAMP
 }
 
@@ -29,6 +29,9 @@ var firebaseRefTrail = firebase.database().ref("Trails");
 firebaseRefTrail.on('child_added', snap => {
   var trails = snap.child("trailName").val();
   $("#trail").append("<option>" + trails + "</option>");
+
+  var markers = L.marker([snap.child("lat").val(), snap.child("lng").val()]).addTo(mymap)
+  .bindPopup(snap.child("trailName").val());
 });
 
 //Generates reviews list page
@@ -57,16 +60,15 @@ firebaseRefReviews.on('child_added', snap => {
   $("#reviews").append(`<div class="card"><div class="card-block"><h2>` +
   trailName + `</h2><p>Rating ` + rating +
   ` stars</p><p>Notes ` + comments + `</p></div></div>`);
+
 });
 
 //Pushes files to Firebase database
 var createTrail = function() {
   var trailName = $("#trailName").val();
   var distance = $("#distance").val();
-  var long = $("#long").val();
-  var lat = $("#lat").val();
 
-  var newTrail = new Trail(trailName, distance, lat, long);
+  var newTrail = new Trail(trailName, distance, lat, lng);
   return newTrail;
 }
 
@@ -103,7 +105,18 @@ var createReview = function() {
   return review;
 }
 
-var mymap = L.map('mapid').setView([47.608262, -122.305668], 13);
+//arbitrary starting point of map
+var mymap = L.map('mapid').setView([47.608262, -122.305668], 12);
+
+//Captures lattitude and longitude when user clicks on the map, so it can be passed to Trails object
+var lat;
+var lng;
+
+mymap.on('click', function(e) {
+    lat = e.latlng.lat;
+    lng = e.latlng.lng;
+});
+
 
  L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZG5jbGVtMyIsImEiOiJjajEyeWxscWIwMGp1MzJwMXByd28waW83In0.PKZV-kndiDaRkLaBz89cvw', {
      attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -118,6 +131,7 @@ function MoveMap(lat, lng) {
 
 //Interface Logic
 $(document).ready(function() {
+
   //When add Trail button clicked, reveals form
   $("#formShow").click(function() {
     $("#trailPick").hide();
