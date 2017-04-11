@@ -32,6 +32,8 @@ firebaseRefTrail.on('child_added', snap => {
 
   var markers = L.marker([snap.child("lat").val(), snap.child("lng").val()]).addTo(mymap)
   .bindPopup(snap.child("trailName").val());
+
+  $("#trailList").append(trails);
 });
 
 //Generates reviews list page
